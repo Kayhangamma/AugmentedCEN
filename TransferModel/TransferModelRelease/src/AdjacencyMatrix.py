@@ -1,0 +1,110 @@
+'''
+Created on Dec 2, 2014
+
+@author: US
+'''
+import csv
+import operator
+
+class adjMatrix:
+
+
+    def __init__(self, adjInputFilePath):
+        self.inputFilePath = adjInputFilePath
+        
+
+    def buildAdjMatrix (self,adjOutputFilePath):
+        self.outputFilePath = adjOutputFilePath
+    
+    
+        cr = csv.reader(open(self.inputFilePath,"rb"))
+        
+        fullInput = []
+        index = 0 
+        for row in cr:
+            if index !=0:
+                fullInput.append(row)
+            index +=1    
+            
+        TransfersFreq = {}
+        unqGroups = {}
+        for i in range(len(fullInput)-1):
+    
+                
+            if fullInput[i][0] == fullInput [i+1][0]:
+                
+                
+                if fullInput[i][1] in unqGroups: 
+                    unqGroups[fullInput[i][1]] +=1
+                    
+                else:
+                    unqGroups[fullInput[i][1]] =1
+                
+                if fullInput[i+1][1] not in unqGroups: 
+                    unqGroups[fullInput[i+1][1]] =1
+                 
+                
+                
+                
+                key = fullInput[i][1]+"#"+fullInput[i+1][1]
+                if key in TransfersFreq:
+                    TransfersFreq [key] +=1
+                else:
+                    TransfersFreq [key] =1
+        
+     
+        """Sorting unqGroups for headers"""
+        sorted_unqGroups = sorted(unqGroups.items(), key=operator.itemgetter(1), reverse=True)
+        #print sorted_unqGroups
+        
+        header = [" "]
+        for x in sorted_unqGroups:
+            header.append(x[0]) 
+        #print header
+    
+            
+        #Output Dense    
+        c = csv.writer(open(self.outputFilePath, "wb"))
+        c.writerow(["Sender", "Receiver", "Prob"])
+        for x in sorted_unqGroups:
+            
+            rowSum = 0.00
+            for y in sorted_unqGroups:    
+                subj = x[0]+"#"+y[0]
+                if subj in TransfersFreq:
+                    rowSum +=TransfersFreq[subj]
+            
+            for y in sorted_unqGroups:
+                
+                subj = x[0]+"#"+y[0]
+                if subj in TransfersFreq:
+                    currentRow = [x[0], y[0], (TransfersFreq[subj]/rowSum) ]            
+                    c.writerow(currentRow)
+        '''
+                    
+        #Output Printing
+        c = csv.writer(open(self.outputFilePath, "wb"))
+        c.writerow(header)
+        for x in sorted_unqGroups:
+            currentRow = [x[0]]
+            rowSum = 0.00
+            for y in sorted_unqGroups:    
+                subj = x[0]+"#"+y[0]
+                if subj in TransfersFreq:
+                    rowSum +=TransfersFreq[subj]
+            
+            for y in sorted_unqGroups:
+                
+                subj = x[0]+"#"+y[0]
+                if subj in TransfersFreq:    
+                    currentRow.append(TransfersFreq[subj]/rowSum)
+                else:
+                    currentRow.append('0')        
+            c.writerow(currentRow)
+        
+        
+        '''
+        
+    
+    
+
