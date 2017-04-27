@@ -1,0 +1,1 @@
+java -jar topicModeling.jar -Blacklist black.txt -Min 3 -Max 10 -Fields Resolution -Groups grouped.txt -Eqlist eql.txt
